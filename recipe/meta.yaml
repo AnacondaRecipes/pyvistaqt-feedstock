@@ -12,10 +12,7 @@ source:
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  # win-arm64 is skipped because `vtk` and `pyvista` are not built for it in
-  # `defaults` yet, so this package cannot be installed there. Drop the
-  # `win and arm64` part once they are available.
-  skip: true  # [py<310 or (win and arm64)]
+  skip: true  # [py<310]
 
 requirements:
   host:
