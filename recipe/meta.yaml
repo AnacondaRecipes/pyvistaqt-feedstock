@@ -12,7 +12,10 @@ source:
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: true  # [py<310]
+  # win-arm64 is skipped because `vtk` and `pyvista` are not built for it in
+  # `defaults` yet, so this package cannot be installed there. Drop the
+  # `win and arm64` part once they are available.
+  skip: true  # [py<310 or (win and arm64)]
 
 requirements:
   host:
@@ -51,7 +54,7 @@ about:
     pyvistaqt is a helper module for pyvista that enables plotting and
     interacting with PyVista scenes through a Qt application. It provides the
     QtInteractor, BackgroundPlotter and MultiPlotter widgets.
-  doc_url: http://qtdocs.pyvista.org
+  doc_url: https://qt.pyvista.org
   dev_url: https://github.com/pyvista/pyvistaqt
 
 extra:
