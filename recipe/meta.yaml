@@ -1,38 +1,44 @@
 {% set name = "pyvistaqt" %}
-{% set version = "0.13.2" %}
+{% set version = "0.12.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 82aef38012e3110fbe9a3aa92feb8175142cbcee0ae167cd99068c697dce81e1
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 95d4c0588186b4febb98fb337794abf54829ace2588e37deede576db515bbc38
 
 build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  skip: true  # [py<310]
 
 requirements:
   host:
-    - python {{ python_min }}
+    - python
     - pip
     - setuptools >=45
-    - setuptools_scm >=6.2
+    - setuptools-scm >=6.2,!=10.1.1
+    - vcs-versioning !=2.0.1
   run:
-    - python >={{ python_min }}
+    - python
     - pyvista >=0.43.7
     - qtpy >=1.9.0
 
+# The upstream suite is entirely Qt/plotting based: it needs a Qt binding, a
+# working OpenGL/offscreen context and screenshot baselines, plus trame-pyvista
+# for the VTK.js export test. Those dependencies/baselines are not available in
+# `main`, so only the import, version and `pip check` are verified here.
 test:
   imports:
     - pyvistaqt
   commands:
+    - pip check
     - python -c "from packaging.version import parse; import pyvistaqt; assert parse(pyvistaqt.__version__) == parse('{{ version }}'), pyvistaqt.__version__"
   requires:
+    - pip
     - packaging
-    - python {{ python_min }}
     - pyside6
 
 about:
@@ -41,7 +47,12 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: A helper module for pyvista to enable you to plot using pyqt
-  doc_url: http://qtdocs.pyvista.org
+  description: |
+    pyvistaqt is a helper module for pyvista that enables plotting and
+    interacting with PyVista scenes through a Qt application. It provides the
+    QtInteractor, BackgroundPlotter and MultiPlotter widgets.
+  doc_url: https://qt.pyvista.org
+  dev_url: https://github.com/pyvista/pyvistaqt
 
 extra:
   recipe-maintainers:
